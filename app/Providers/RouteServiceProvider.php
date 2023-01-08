@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -36,8 +37,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            $this->loadCustomersV1Routes();
-            $this->loadDriversV1Routes();
+            $this->loadRouters();
 
         });
     }
@@ -54,20 +54,23 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    protected function loadCustomersV1Routes()
+    protected function loadRouters()
     {
-        Route::middleware('api')
-            ->prefix('api/customers/v1')
-            ->group(base_path('routes/api/customers-v1.php'));
+        $files = [
+            'drivers-v1.php',
+            'parcel-v1.php',
+        ];
 
-    }
+        foreach ($files as $file) {
 
-    protected function loadDriversV1Routes()
-    {
-        Route::middleware('api')
-            ->prefix('api/drivers/v1')
-            ->group(base_path('routes/api/drivers-v1.php'));
+            $routeFile = explode('-', str_replace('.php', '', $file));
+            $domain = $routeFile[0];
+            $version = $routeFile[1];
 
+            Route::middleware('api')
+                ->prefix("api/{$domain}/{$version}")
+                ->group(base_path("routes/api/{$file}"));
+        }
     }
 
 }
