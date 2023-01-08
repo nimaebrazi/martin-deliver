@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Http\ApiResponse;
+use App\Infrastructure\Validator\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,5 +49,16 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ValidationException) {
+            return response()->json(
+                ApiResponse::fail($e->getMessage(), $e->getErrors())->toArray(),
+                422
+            );
+        }
+        return parent::render($request, $e);
     }
 }
