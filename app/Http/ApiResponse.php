@@ -91,8 +91,8 @@ class ApiResponse
     public static function fail($statusCode = 500, string $message = null, mixed $data = null): JsonResponse
     {
         return response()->json(
-            self::make()->setIsSuccess(false)->setMessage($message)->setData($data),
-            $statusCode
+            self::make()->setIsSuccess(false)->setMessage($message)->setData($data)->toArray(),
+            $statusCode != 0 ? $statusCode : 500
         );
     }
 
