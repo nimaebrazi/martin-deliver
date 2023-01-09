@@ -3,19 +3,19 @@
 namespace App\Infrastructure\Validator;
 
 
-use Exception;
+use RuntimeException;
 
-class ValidationException extends Exception
+class ValidationException extends RuntimeException
 {
-    protected $errors;
+    protected mixed $errors;
 
     /**
      * ValidationException constructor.
-     * @param $message
-     * @param $code
-     * @param $errors
+     * @param string $message
+     * @param int $code
+     * @param mixed $errors
      */
-    public function __construct($message, $code, $errors)
+    public function __construct(string $message, int $code, mixed $errors)
     {
         parent::__construct($message, $code);
         $this->errors = $errors;
@@ -24,7 +24,7 @@ class ValidationException extends Exception
     /**
      * @return mixed
      */
-    public function getErrors()
+    public function getErrors(): mixed
     {
         return $this->errors;
     }
@@ -33,7 +33,7 @@ class ValidationException extends Exception
      * @param mixed $errors
      * @return void
      */
-    public function setErrors($errors): void
+    public function setErrors(mixed $errors): void
     {
         $this->errors = $errors;
     }
