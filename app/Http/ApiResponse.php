@@ -3,11 +3,12 @@
 namespace App\Http;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class ApiResponse
 {
     protected bool $isSuccess;
-    protected string $message;
+    protected ?string $message;
     protected mixed $data;
 
     /**
@@ -40,7 +41,7 @@ class ApiResponse
      * @param string $message
      * @return ApiResponse
      */
-    public function setMessage(string $message): static
+    public function setMessage(?string $message): static
     {
         $this->message = $message;
         return $this;
@@ -69,12 +70,22 @@ class ApiResponse
         return call_user_func('get_object_vars', $this);
     }
 
-    public static function success(mixed $data = null, string $message = 'SUCCESS', $statusCode = 200): JsonResponse
+    public static function success(mixed $data = null, ?string $message = 'SUCCESS', ?int $statusCode = 200): JsonResponse
     {
         return response()->json(
             self::make()->setIsSuccess(true)->setMessage($message)->setData($data)->toArray(),
             $statusCode
         );
+    }
+
+    public static function noContent(): Response
+    {
+        return response()->noContent(201);
+    }
+
+    public static function noFound(): Response
+    {
+        return response()->noContent(404);
     }
 
     public static function fail($statusCode = 500, string $message = null, mixed $data = null): JsonResponse
