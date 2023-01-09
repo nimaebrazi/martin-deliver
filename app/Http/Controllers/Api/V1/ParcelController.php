@@ -58,6 +58,11 @@ class ParcelController extends Controller
 
     }
 
+    public function status($parcelId): JsonResponse
+    {
+        return ApiResponse::success($this->parcelService->parcelStatus($parcelId));
+    }
+
     /**
      * @param Request $request
      * @return array
