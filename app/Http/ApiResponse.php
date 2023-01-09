@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use Illuminate\Http\JsonResponse;
+
 class ApiResponse
 {
     protected bool $isSuccess;
@@ -67,14 +69,25 @@ class ApiResponse
         return call_user_func('get_object_vars', $this);
     }
 
-    public static function success(string $message = null, mixed $data = null): static
+    public static function success(mixed $data = null, string $message = 'SUCCESS', $statusCode = 200): JsonResponse
     {
-        return self::make()->setIsSuccess(true)->setMessage($message)->setData($data);
+        return response()->json(
+            self::make()->setIsSuccess(true)->setMessage($message)->setData($data)->toArray(),
+            $statusCode
+        );
     }
 
-    public static function fail(string $message, mixed $data = null): static
+    public static function fail($statusCode = 500, string $message = null, mixed $data = null): JsonResponse
     {
-        return self::make()->setIsSuccess(false)->setMessage($message)->setData($data);
+        return response()->json(
+            self::make()->setIsSuccess(false)->setMessage($message)->setData($data),
+            $statusCode
+        );
+    }
+
+    public static function validationError(string $message = null, mixed $data = null): JsonResponse
+    {
+        return self::fail(422, $message, $data);
     }
 
     public static function make(): static

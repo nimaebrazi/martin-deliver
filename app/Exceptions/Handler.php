@@ -54,10 +54,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         if ($e instanceof ValidationException) {
-            return response()->json(
-                ApiResponse::fail($e->getMessage(), $e->getErrors())->toArray(),
-                422
-            );
+            return ApiResponse::validationError($e->getMessage(), $e->getErrors());
         }
         return parent::render($request, $e);
     }
