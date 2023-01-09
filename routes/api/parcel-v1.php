@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::controller(ParcelController::class)->group(function () {
-    Route::get('/register', 'register');
+    Route::post('/register', 'register');
 });
 
 
