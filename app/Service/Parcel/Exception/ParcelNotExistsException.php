@@ -6,6 +6,6 @@ namespace App\Service\Parcel\Exception;
 use Exception;
 
 
-class ParcelStatusExistsException extends Exception
+class ParcelNotExistsException extends Exception
 {
 }

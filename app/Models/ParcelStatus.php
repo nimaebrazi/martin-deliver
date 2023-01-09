@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 
 /**
+ *
+ * @property string $status
+ * @property string $is_active
+ *
  * @method static active
  * @method static parcelId
  */

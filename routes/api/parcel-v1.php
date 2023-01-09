@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(ParcelController::class)->group(function () {
     Route::post('/register', 'register');
+    Route::put('/cancel/{id}', 'cancel');
 });
 
 

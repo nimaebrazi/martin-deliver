@@ -9,6 +9,7 @@ use App\Http\Validator\ParcelValidator;
 use App\Infrastructure\Validator\ValidationException;
 use App\Models\Parcel;
 use App\Models\ParcelStatus;
+use App\Service\Parcel\Exception\ParcelNotExistsException;
 use App\Service\Parcel\ParcelService;
 use App\Service\Parcel\ParcelStatusService;
 use Exception;
@@ -16,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Spatie\FlareClient\Api;
 use Symfony\Component\HttpFoundation\Response;
 
 class ParcelController extends Controller
@@ -48,6 +50,19 @@ class ParcelController extends Controller
 
     }
 
+
+    public function cancel($parcelId): JsonResponse|Response
+    {
+        try {
+            $this->parcelService->cancel($parcelId);
+
+            return ApiResponse::noContent();
+        } catch (ParcelNotExistsException $e) {
+            return ApiResponse::noFound();
+        } catch (Exception $e) {
+            return ApiResponse::fail(500, $e->getMessage());
+        }
+    }
 
     /**
      * @param Request $request
