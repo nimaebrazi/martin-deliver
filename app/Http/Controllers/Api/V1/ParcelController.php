@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enums\ParcelStatusEnum;
 use App\Http\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Validator\ParcelValidator;
 use App\Infrastructure\Validator\ValidationException;
 use App\Models\Parcel;
 use App\Models\ParcelStatus;
+use App\Service\Parcel\Exception\ParcelIsNotCancelableException;
 use App\Service\Parcel\Exception\ParcelNotExistsException;
+use App\Service\Parcel\Exception\ParcelStatusExistsException;
 use App\Service\Parcel\ParcelService;
 use App\Service\Parcel\ParcelStatusService;
 use Exception;
@@ -31,37 +32,30 @@ class ParcelController extends Controller
     }
 
     /**
-     * @throws Exception
      * @throws ValidationException
+     * @throws ParcelStatusExistsException
      */
     public function register(Request $request, ParcelValidator $parcelValidator): JsonResponse
     {
         $parcelValidator->make($request->all())->validate();
 
-        try {
-            $parcel = $this->parcelService->register($this->getParcelData($request));
+        $parcel = $this->parcelService->register($this->getParcelData($request));
 
-            return ApiResponse::success(['id' => $parcel?->id]);
-
-        } catch (Exception $e) {
-
-            return ApiResponse::fail();
-        }
+        return ApiResponse::success(['id' => $parcel?->id]);
 
     }
 
 
+    /**
+     * @throws ParcelNotExistsException
+     * @throws ParcelIsNotCancelableException
+     */
     public function cancel($parcelId): JsonResponse|Response
     {
-        try {
-            $this->parcelService->cancel($parcelId);
+        $this->parcelService->cancel($parcelId);
 
-            return ApiResponse::noContent();
-        } catch (ParcelNotExistsException $e) {
-            return ApiResponse::noFound();
-        } catch (Exception $e) {
-            return ApiResponse::fail(500, $e->getMessage());
-        }
+        return ApiResponse::noContent();
+
     }
 
     /**

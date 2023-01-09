@@ -56,6 +56,20 @@ class Handler extends ExceptionHandler
         if ($e instanceof ValidationException) {
             return ApiResponse::validationError($e->getMessage(), $e->getErrors());
         }
+
+        if ($e instanceof \Exception) {
+
+            if ($e->getCode() == 404){
+                return ApiResponse::noFound();
+            }
+
+            if ($e->getCode() == 201){
+                return ApiResponse::noContent();
+            }
+
+            return ApiResponse::fail($e->getCode(), trans($e->getMessage()));
+        }
+
         return parent::render($request, $e);
     }
 }
