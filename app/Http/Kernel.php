@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\DriverAuthToken;
 use App\Http\Middleware\RegisterParcelAuthToken;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'api.token.customer' => RegisterParcelAuthToken::class
+        'api.token.customer' => RegisterParcelAuthToken::class,
+        'api.token.driver' => DriverAuthToken::class
     ];
 }
