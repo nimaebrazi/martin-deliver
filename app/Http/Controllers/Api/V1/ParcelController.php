@@ -81,6 +81,8 @@ class ParcelController extends Controller
             'destination_mobile' => $request->input('destination.mobile'),
             'destination_lat' => $request->input('destination.lat'),
             'destination_long' => $request->input('destination.long'),
+
+            'token' => $request->header('Authorization'),
         ];
     }
 }

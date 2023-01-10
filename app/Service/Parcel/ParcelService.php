@@ -2,6 +2,7 @@
 
 namespace App\Service\Parcel;
 
+use App\Models\Customer;
 use App\Models\Parcel;
 use App\Models\ParcelStatus;
 use App\Service\Parcel\Enums\ParcelStatusEnum;
@@ -35,6 +36,11 @@ class ParcelService
         DB::beginTransaction();
 
         try {
+            $customer = $this->getCustomerByToken($data['token']);
+
+            unset($data['token']);
+            $data['customer_id'] = $customer->id;
+
             $parcel = Parcel::create($data);
 
             $this->parcelStatusService->createRegisteredStatus($parcel);
@@ -81,9 +87,11 @@ class ParcelService
         return ParcelStatus::parcelId($parcelId)->get();
     }
 
-    public function accept()
+    public function accept($parcelId)
     {
-        // DB::table('users')->where('votes', '>', 100)->lockForUpdate()->get();
+//        $parcel = Parcel::find($parcelId);
+        // if status -> registered can be accept
+//         DB::table($parcel->getTable())->where('votes', '>', 100)->lockForUpdate()->get();
         // dispatch event to webhooks which accepted driver
     }
 
@@ -102,5 +110,14 @@ class ParcelService
         }
 
         return true;
+    }
+
+    /**
+     * @param $token
+     * @return Customer|null
+     */
+    protected function getCustomerByToken($token): ?Customer
+    {
+        return Customer::accessToken($token)->first();
     }
 }
