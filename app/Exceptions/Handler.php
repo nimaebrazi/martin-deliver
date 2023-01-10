@@ -58,16 +58,6 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof \Exception) {
-
-            if ($e->getCode() == 404) {
-                return ApiResponse::noFound();
-            }
-
-            if ($e->getCode() == 201) {
-                return ApiResponse::noContent();
-            }
-
-
             $message = trans($e->getMessage());
 
             $message = is_null($message) || $message === '' ? 'ERROR' : $message;

@@ -5,21 +5,25 @@ namespace App\Service\Parcel;
 use App\Models\Parcel;
 use App\Models\ParcelStatus;
 use App\Service\Parcel\Enums\ParcelStatusEnum;
+use App\Service\Parcel\Events\ParcelRegistered;
 use App\Service\Parcel\Exception\ParcelException;
 use App\Service\Parcel\Exception\ParcelIsNotCancelableException;
 use App\Service\Parcel\Exception\ParcelNotExistsException;
 use App\Service\Parcel\Exception\ParcelStatusExistsException;
 use Exception;
+use Illuminate\Contracts\Events\Dispatcher as EventsDispatcher;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ParcelService
 {
     private ParcelStatusService $parcelStatusService;
+    private EventsDispatcher $eventsDispatcher;
 
-    public function __construct(ParcelStatusService $parcelStatusService)
+    public function __construct(ParcelStatusService $parcelStatusService, EventsDispatcher $eventsDispatcher)
     {
         $this->parcelStatusService = $parcelStatusService;
+        $this->eventsDispatcher = $eventsDispatcher;
     }
 
     /**
@@ -37,8 +41,7 @@ class ParcelService
 
             DB::commit();
 
-            // TODO: event dispatch order registered
-            // listen drivers for accept it
+            $this->eventsDispatcher->dispatch(new ParcelRegistered($parcel));
 
             return $parcel;
         } catch (Exception $e) {
@@ -76,6 +79,12 @@ class ParcelService
     public function parcelStatus($parcelId): ?Collection
     {
         return ParcelStatus::parcelId($parcelId)->get();
+    }
+
+    public function accept()
+    {
+        // DB::table('users')->where('votes', '>', 100)->lockForUpdate()->get();
+        // dispatch event to webhooks which accepted driver
     }
 
     /**
