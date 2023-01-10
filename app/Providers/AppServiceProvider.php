@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\ParcelStatus;
+use App\Service\Parcel\ParcelStatusObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        ParcelStatus::observe(ParcelStatusObserver::class);
     }
 }

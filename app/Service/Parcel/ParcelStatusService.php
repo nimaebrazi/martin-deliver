@@ -27,8 +27,31 @@ class ParcelStatusService
 
     /**
      * @param Parcel $parcel
-     * @param ParcelStatusEnum $statusEnum
      * @return Parcel|null
+     *
+     * @throws ParcelStatusExistsException
+     */
+    public function createAcceptByDriverStatus(Parcel $parcel): ?ParcelStatus
+    {
+        return $this->createStatus($parcel, ParcelStatusEnum::ACCEPT_BY_DRIVER);
+    }
+
+
+    /**
+     * @param $parcelId
+     * @param ParcelStatusEnum $statusEnum
+     * @return ParcelStatus|null
+     * @throws ParcelStatusExistsException
+     */
+    public function createStatusById($parcelId, ParcelStatusEnum $statusEnum): ParcelStatus|null
+    {
+        return $this->createStatus(Parcel::find($parcelId), $statusEnum);
+    }
+
+    /**
+     * @param Parcel $parcel
+     * @param ParcelStatusEnum $statusEnum
+     * @return ParcelStatus|null
      *
      * @throws ParcelStatusExistsException
      */
