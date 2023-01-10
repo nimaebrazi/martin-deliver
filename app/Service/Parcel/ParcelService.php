@@ -2,6 +2,7 @@
 
 namespace App\Service\Parcel;
 
+use App\Exceptions\AuthenticationException;
 use App\Models\Customer;
 use App\Models\Parcel;
 use App\Models\ParcelStatus;
@@ -58,28 +59,63 @@ class ParcelService
 
     /**
      * @param mixed $parcelId
-     * @throws ParcelNotExistsException
+     * @return mixed
      * @throws ParcelIsNotCancelableException
+     * @throws ParcelNotExistsException
      */
-    public function cancel(mixed $parcelId)
+    public function cancelBySource(mixed $parcelId): mixed
     {
         $parcel = Parcel::find($parcelId);
-
         if (is_null($parcel)) {
             throw ParcelException::parcelnotExists();
         }
 
+        return $this->cancel($parcelId, ParcelStatusEnum::CANCEL_BY_SOURCE);
+        // TODO: handle event. remove from broker or some thing
+    }
+
+    /**
+     * @param mixed $parcelId
+     * @param $token
+     * @return mixed $token
+     * @throws AuthenticationException
+     * @throws ParcelIsNotCancelableException
+     * @throws ParcelNotExistsException
+     */
+    public function cancelByDriver(mixed $parcelId, $token): mixed
+    {
+        // TODO: instead pass token to should use  AuthFactory contract.
+
+        $parcel = Parcel::find($parcelId);
+        if (is_null($parcel)) {
+            throw ParcelException::parcelnotExists();
+        }
+
+        $driver = $parcel->driver()->first();
+        if ($driver->access_token !== $token) {
+            throw new AuthenticationException();
+        }
+
+        return $this->cancel($parcel, ParcelStatusEnum::CANCEL_BY_DRIVER);
+        // TODO: handle event. dispatch to broker or some thing
+    }
+
+    /**
+     * @param Parcel $parcel
+     * @param ParcelStatusEnum $statusEnum
+     * @return bool
+     * @throws ParcelIsNotCancelableException
+     */
+    protected function cancel(Parcel $parcel, ParcelStatusEnum $statusEnum)
+    {
+        /** @var ParcelStatus $parcelStatus */
         $parcelStatus = $parcel->status()->first();
+
         if (!$this->parcelIsCancelable($parcel, $parcelStatus)) {
             throw ParcelException::parcelIsNotCancelable();
         }
 
-        $result = $parcelStatus->update(['status' => ParcelStatusEnum::CANCEL_BY_SOURCE->value]);
-
-        // TODO: handle event. remove from broker or some thing
-
-
-        return $result;
+        return $parcelStatus->update(['status' => $statusEnum->value]);
     }
 
     public function parcelStatus($parcelId): ?Collection
@@ -87,12 +123,27 @@ class ParcelService
         return ParcelStatus::parcelId($parcelId)->get();
     }
 
-    public function accept($parcelId)
+    /**
+     * @throws ParcelStatusExistsException
+     */
+    public function accept($parcelId, $driverId)
     {
-//        $parcel = Parcel::find($parcelId);
-        // if status -> registered can be accept
-//         DB::table($parcel->getTable())->where('votes', '>', 100)->lockForUpdate()->get();
-        // dispatch event to webhooks which accepted driver
+        $parcel = Parcel::find($parcelId);
+        $status = $parcel->status()->find();
+        if ($status->status !== ParcelStatusEnum::REGISTERED->value) {
+             throw new \Exception('You can not accept this parcel.');
+        }
+
+        // Handle race condition
+        DB::transaction(function () use ($parcel, $driverId){
+            $p = DB::table($parcel->getTable())->where('id', '=', $parcel->id)->lockForUpdate()->first();
+            $p->driver_id = $driverId;
+            $p->save();
+        });
+
+        $this->parcelStatusService->createAcceptByDriverStatus($parcel);
+
+//         dispatch event to webhooks which accepted driver
     }
 
     /**
