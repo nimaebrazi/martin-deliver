@@ -52,7 +52,7 @@ class ParcelController extends Controller
      */
     public function cancel($parcelId): JsonResponse|Response
     {
-        $this->parcelService->cancel($parcelId);
+        $this->parcelService->cancelBySource($parcelId);
 
         return ApiResponse::noContent();
 
