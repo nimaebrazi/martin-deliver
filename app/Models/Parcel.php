@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  *
@@ -22,10 +23,14 @@ class Parcel extends Model
         return $this->hasMany(ParcelStatus::class);
     }
 
-    public function status(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function status(): HasOne
     {
         return $this->hasOne(ParcelStatus::class)->active()->limit(1);
     }
 
+    public function driver()
+    {
+        $this->belongsTo(Driver::class);
+    }
 
 }
