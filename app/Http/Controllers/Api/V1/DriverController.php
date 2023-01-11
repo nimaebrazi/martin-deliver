@@ -47,6 +47,7 @@ class DriverController extends Controller
      */
     public function updateParcelStatus($id, Request $request): Response
     {
+
         $statuses = [
             ParcelStatusEnum::CANCEL_BY_SOURCE->value,
             ParcelStatusEnum::REGISTERED->value,
@@ -56,7 +57,7 @@ class DriverController extends Controller
             throw new \Exception('cannot set this state');
         }
 
-        $this->parcelStatusService->createStatusById($id);
+        $this->parcelStatusService->createStatusById($id, ParcelStatusEnum::from($request->input('status')));
 
         return ApiResponse::noContent();
     }
