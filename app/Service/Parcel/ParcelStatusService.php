@@ -80,7 +80,7 @@ class ParcelStatusService
 
     protected function deActiveExistsStatusesForParcel(Parcel $parcel)
     {
-        return ParcelStatus::parcelId($parcel->id)->update('is_active', false);
+        return ParcelStatus::parcelId($parcel->id)->update(['is_active' => false]);
     }
 
     protected function isExistsStatus(Parcel $parcel, Collection $parcelStatuses, ParcelStatusEnum $statusEnum): bool

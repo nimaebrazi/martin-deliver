@@ -25,7 +25,9 @@ class DriverController extends Controller
 
     public function accept($id, Request $request)
     {
-        $this->parcelService->accept($id, Driver::accessToken($request->header('Authorization'))->first()?->id);
+        $driverId = Driver::accessToken($request->header('Authorization'))->first()?->id;
+
+        $this->parcelService->accept($id, $driverId);
 
         ApiResponse::noContent();
     }

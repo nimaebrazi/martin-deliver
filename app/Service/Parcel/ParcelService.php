@@ -128,22 +128,26 @@ class ParcelService
      */
     public function accept($parcelId, $driverId)
     {
-        $parcel = Parcel::find($parcelId);
-        $status = $parcel->status()->find();
-        if ($status->status !== ParcelStatusEnum::REGISTERED->value) {
-             throw new \Exception('You can not accept this parcel.');
-        }
+        DB::transaction(function () use ($parcelId, $driverId) {
 
-        // Handle race condition
-        DB::transaction(function () use ($parcel, $driverId){
-            $p = DB::table($parcel->getTable())->where('id', '=', $parcel->id)->lockForUpdate()->first();
-            $p->driver_id = $driverId;
-            $p->save();
+            /** @var Parcel $parcel */
+            $parcel = Parcel::lockForUpdate()->find($parcelId);
+
+            $status = $parcel->status;
+            if ((int)$status->status != ParcelStatusEnum::REGISTERED->value) {
+                throw new \Exception('You can not accept this parcel.');
+            }
+
+            // Handle race condition
+            $parcel->update([
+                'driver_id' => $driverId
+            ]);
+
+            $this->parcelStatusService->createAcceptByDriverStatus($parcel);
+
         });
 
-        $this->parcelStatusService->createAcceptByDriverStatus($parcel);
-
-//         dispatch event to webhooks which accepted driver
+        // TODO: dispatch event to webhooks which accepted driver
     }
 
     /**
