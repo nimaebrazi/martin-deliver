@@ -91,7 +91,7 @@ class ParcelService
             throw ParcelException::parcelnotExists();
         }
 
-        $driver = $parcel->driver()->first();
+        $driver = $parcel->driver;
         if ($driver->access_token !== $token) {
             throw new AuthenticationException();
         }
@@ -103,19 +103,20 @@ class ParcelService
     /**
      * @param Parcel $parcel
      * @param ParcelStatusEnum $statusEnum
-     * @return bool
+     * @return Parcel|ParcelStatus
      * @throws ParcelIsNotCancelableException
+     * @throws ParcelStatusExistsException
      */
     protected function cancel(Parcel $parcel, ParcelStatusEnum $statusEnum)
     {
         /** @var ParcelStatus $parcelStatus */
-        $parcelStatus = $parcel->status()->first();
+        $parcelStatus = $parcel->status;
 
         if (!$this->parcelIsCancelable($parcel, $parcelStatus)) {
             throw ParcelException::parcelIsNotCancelable();
         }
 
-        return $parcelStatus->update(['status' => $statusEnum->value]);
+        return $this->parcelStatusService->createCancelByDriverStatus($parcel);
     }
 
     public function parcelStatus($parcelId): ?Collection

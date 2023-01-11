@@ -36,6 +36,16 @@ class ParcelStatusService
         return $this->createStatus($parcel, ParcelStatusEnum::ACCEPT_BY_DRIVER);
     }
 
+    /**
+     * @param Parcel $parcel
+     * @return Parcel|null
+     *
+     * @throws ParcelStatusExistsException
+     */
+    public function createCancelByDriverStatus(Parcel $parcel): ?ParcelStatus
+    {
+        return $this->createStatus($parcel, ParcelStatusEnum::CANCEL_BY_DRIVER);
+    }
 
     /**
      * @param $parcelId
