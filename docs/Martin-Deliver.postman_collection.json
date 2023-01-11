@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "264621a6-05f2-4c2c-a4b5-fad5498ddc05",
+		"name": "Martin-Deliver",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1692885"
+	},
+	"item": [
+		{
+			"name": "parcels",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "register",
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{customer-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"source\": {\n        \"lat\": 35.6555879,\n        \"long\": 51.3748242,\n        \"name\": \"چیلیوری\",\n        \"address\": \"ونک ساختمان رویال طبقه اول\",\n        \"mobile\": \"09127654321\"\n    },\n    \"destination\": {\n        \"lat\": 35.706574,\n        \"long\": 51.403439,\n        \"name\": \"نیما ابرازی\",\n        \"address\": \"سعادت آباد\",\n        \"mobile\": \"09015262679\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{parcel-v1-base-url}}/register",
+									"host": [
+										"{{parcel-v1-base-url}}"
+									],
+									"path": [
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cancel",
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{customer-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{parcel-v1-base-url}}/cancel/5",
+									"host": [
+										"{{parcel-v1-base-url}}"
+									],
+									"path": [
+										"cancel",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "status",
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{customer-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{parcel-v1-base-url}}/status/4",
+									"host": [
+										"{{parcel-v1-base-url}}"
+									],
+									"path": [
+										"status",
+										"4"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "drivers",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "accept",
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{driver-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{drivers-v1-base-url}}/accept/parcel/22",
+									"host": [
+										"{{drivers-v1-base-url}}"
+									],
+									"path": [
+										"accept",
+										"parcel",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cancel",
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{driver-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{drivers-v1-base-url}}/cancel/parcel/22",
+									"host": [
+										"{{drivers-v1-base-url}}"
+									],
+									"path": [
+										"cancel",
+										"parcel",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "status",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "{{driver-token}}",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "Authorization",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": 3\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{parcel-v1-base-url}}/status/parcel/4",
+									"host": [
+										"{{parcel-v1-base-url}}"
+									],
+									"path": [
+										"status",
+										"parcel",
+										"4"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
